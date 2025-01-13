@@ -6,7 +6,8 @@ const { exec } = require("child_process");
 const llamaConfigPath = path.join(__dirname, "llamaConfig.json");
 const ollamaConfigPath = path.join(__dirname, "ollamaConfig.json");
 const generalConfigPath = path.join(__dirname, "generalConfig.json");
-const startFilePath = path.join(__dirname, "../start.js");
+const startFilePathNode = path.join(__dirname, "../start.js");
+const startFilePathPy = path.join(__dirname, "../start.py");
 
 // Reusable terminal selector function
 async function showSelector(options, message) {
@@ -46,9 +47,13 @@ async function showInput(message) {
 }
 
 function deleteStart() {
-  if (fs.existsSync(startFilePath)) {
-    fs.unlinkSync(startFilePath);
+  if (fs.existsSync(startFilePathNode)) {
+    fs.unlinkSync(startFilePathNode);
     console.log("start.js has been removed.");
+  }
+  if (fs.existsSync(startFilePathPy)) {
+    fs.unlinkSync(startFilePathPy);
+    console.log("start.py has been removed.");
   }
 }
 
