@@ -4,6 +4,7 @@ const path = require("path");
 
 const llamaConfigPath = path.join(__dirname, "llamaConfig.json");
 const ollamaConfigPath = path.join(__dirname, "ollamaConfig.json");
+const promptPath = path.join(__dirname, "prompt.json");
 
 // Reusable terminal selector function
 async function showSelector(options, message) {
@@ -43,61 +44,33 @@ async function showInput(message) {
 
 //This creates and writes the config file for the **ollama** bot.
 async function ollamaSetup() {
-  showInput(
+  await showInput(
     "Please enter your bot token from discord, this is stored locally for security: "
   ).then((input) => {
     const botToken = input;
-    showInput(
-      "Please enter your prompt for your bot. (Also stored locally): "
-    ).then((input) => {
-      const prompt = input;
-
-      fs.readFile(ollamaConfigPath, "utf8", (err, data) => {
-        let config = {};
-        if (!err && data) {
-          config = JSON.parse(data);
-        }
-
-        config.botToken = botToken;
-        config.prompt = prompt;
-
-        fs.writeFileSync(
-          ollamaConfigPath,
-          JSON.stringify(config, null, 2),
-          "utf8"
-        );
-      });
-    });
+    fs.writeFileSync(ollamaConfigPath, JSON.stringify({ botToken }), "utf8");
+  });
+  await showInput(
+    "Please enter your prompt for your bot. (Also stored locally): "
+  ).then((input) => {
+    const prompt = input;
+    fs.writeFileSync(promptPath, JSON.stringify({ prompt }), "utf8");
   });
 }
 
 //This creates and writes the config file for the **llama** bot.
 async function llamaSetup() {
-  showInput(
+  await showInput(
     "Please enter your bot token from discord, this is stored locally for security: "
   ).then((input) => {
     const botToken = input;
-    showInput(
-      "Please enter your prompt for your bot. (Also stored locally): "
-    ).then((input) => {
-      const prompt = input;
-
-      fs.readFile(ollamaConfigPath, "utf8", (err, data) => {
-        let config = {};
-        if (!err && data) {
-          config = JSON.parse(data);
-        }
-
-        config.botToken = botToken;
-        config.prompt = prompt;
-
-        fs.writeFileSync(
-          llamaConfigPath,
-          JSON.stringify(config, null, 2),
-          "utf8"
-        );
-      });
-    });
+    fs.writeFileSync(llamaConfigPath, JSON.stringify({ botToken }), "utf8");
+  });
+  await showInput(
+    "Please enter your prompt for your bot. (Also stored locally): "
+  ).then((input) => {
+    const prompt = input;
+    fs.writeFileSync(promptPath, JSON.stringify({ prompt }), "utf8");
   });
 }
 
