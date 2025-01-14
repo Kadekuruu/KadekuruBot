@@ -33,7 +33,7 @@ async function init() {
       } else if (modelChoice.selected === "Llama") {
         execSync("node src/llamaBuild.js", { stdio: "inherit" });
       } else if (modelChoice.selected === "Ollama") {
-        execSync("python src/ollamaBuild.py", { stdio: "inherit" });
+        execSync("python src/KadekuruBot.py", { stdio: "inherit" });
       }
     }
   } catch (error) {

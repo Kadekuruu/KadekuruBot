@@ -59,56 +59,74 @@ function deleteStart() {
   console.log("Setup complete.");
 }
 
-async function checkAndInstallPython() {
-  console.log("Checking if Python is installed...");
+async function installPython() {
+  const platform = process.platform;
+
+  let installCommand;
+  if (platform === "win32") {
+    installCommand = "winget install -e --id Python.Python.3 --version 3.11";
+  } else if (platform === "darwin") {
+    installCommand = "brew install python@3.11";
+  } else if (platform === "linux") {
+    installCommand = "sudo apt update && sudo apt install -y python3.11";
+  } else {
+    console.error("Unsupported OS. Please install Python 3.11 manually.");
+    return false;
+  }
 
   return new Promise((resolve, reject) => {
-    exec("python --version", (error, stdout, stderr) => {
+    exec(installCommand, (installErr, stdout, stderr) => {
+      if (installErr) {
+        console.error("Failed to install Python:", stderr.trim());
+        reject(stderr);
+      } else {
+        console.log("Python installed successfully.");
+        resolve(true);
+      }
+    });
+  }).catch((error) => {
+    console.error("Error during Python installation:", error);
+    return false;
+  });
+}
+
+async function checkPython() {
+  console.log("Checking if Python is installed...");
+
+  return new Promise((resolve) => {
+    exec("python --version", async (error, stdout) => {
       if (!error) {
         console.log(`Python found: ${stdout.trim()}`);
-        resolve(true);
-        return;
-      }
+        const versionOutput = stdout.trim();
+        const match = versionOutput.match(/Python (\d+)\.(\d+)\.(\d+)/);
+        if (match) {
+          const major = parseInt(match[1], 10);
+          const minor = parseInt(match[2], 10);
 
-      console.log("Python is not installed. Attempting to install...");
-      const platform = process.platform;
-
-      let installCommand;
-      if (platform === "win32") {
-        installCommand = "winget install -e --id Python.Python.3";
-      } else if (platform === "darwin") {
-        installCommand = "brew install python";
-      } else if (platform === "linux") {
-        installCommand = "sudo apt update && sudo apt install -y python3";
-      } else {
-        console.error("Unsupported OS. Please install Python manually.");
-        resolve(false);
-        return;
-      }
-
-      exec(installCommand, (installErr, stdout, stderr) => {
-        if (installErr) {
-          console.error("Failed to install Python:", stderr.trim());
-          resolve(false);
-        } else {
-          console.log("Python installed successfully.");
-          resolve(true);
+          if (major !== 3 || minor > 11) {
+            console.error(
+              "Ollama runs into issues with versions above Python 3.11. Please install Python 3.11."
+            );
+            resolve(false);
+          } else {
+            resolve(true);
+          }
         }
-      });
+      } else {
+        console.log("Python is not installed. Attempting to install...");
+        await installPython().catch(() => resolve(false));
+        resolve(true);
+      }
     });
   });
 }
 
 async function ollamaSetup(botToken) {
-  const pythonInstalled = await checkAndInstallPython();
+  const pythonInstalled = await checkPython();
   if (!pythonInstalled) return;
 
   console.log("Installing Python requirements...");
   execSync(`pip install -r ${pyRequirementsPath}`, { stdio: "inherit" });
-
-  // ** This is an example of writing an input to the ollama config file if neccessary. **
-  // const test = await showInput("Field: ");
-  // fs.writeFileSync(, JSON.stringify({ test }), "utf8");
 
   fs.writeFileSync(ollamaConfigPath, JSON.stringify({ botToken }), "utf8");
 
@@ -116,10 +134,6 @@ async function ollamaSetup(botToken) {
 }
 
 async function llamaSetup() {
-  // ** This is an example of writing an input to the llama config file if neccessary. **
-  // const test = await showInput("Field: ");
-  // fs.writeFileSync(llamaConfigPath, JSON.stringify({ test }), "utf8");
-
   deleteStart();
 }
 
