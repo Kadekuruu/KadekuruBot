@@ -1,4 +1,5 @@
-const { exec } = require("child_process");
+const { exec, execSync } = require("child_process");
+
 const inquirer = require("inquirer");
 
 async function init() {
@@ -9,14 +10,14 @@ async function init() {
         type: "list",
         name: "selected",
         message: "What would you like to do?",
-        choices: ["Run a Model.", "Rerun Setup.", "Exit."],
+        choices: ["Run a Model.", "Run Setup.", "Exit."],
       },
     ]);
     if (answer.selected === "Exit.") {
       return;
-    } else if (answer.selected === "Rerun Setup.") {
+    } else if (answer.selected === "Run Setup.") {
       console.log("Running setup...");
-      exec("node src/setup.js", { stdio: "inherit" });
+      execSync("node src/setup.js", { stdio: "inherit" });
     } else if (answer.selected === "Run a Model.") {
       const prompt = inquirer.createPromptModule();
       const modelChoice = await prompt([

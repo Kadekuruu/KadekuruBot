@@ -1,11 +1,12 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
 const path = require("path");
-const { exec } = require("child_process");
+const { exec, execSync } = require("child_process");
 
 const llamaConfigPath = path.join(__dirname, "llamaConfig.json");
 const ollamaConfigPath = path.join(__dirname, "ollamaConfig.json");
 const generalConfigPath = path.join(__dirname, "generalConfig.json");
+const pyRequirementsPath = path.join(__dirname, "requirements.txt");
 const startFilePathNode = path.join(__dirname, "../start.js");
 const startFilePathPy = path.join(__dirname, "../start.py");
 
@@ -55,6 +56,7 @@ function deleteStart() {
     fs.unlinkSync(startFilePathPy);
     console.log("start.py has been removed.");
   }
+  console.log("Setup complete.");
 }
 
 async function checkAndInstallPython() {
@@ -97,13 +99,18 @@ async function checkAndInstallPython() {
   });
 }
 
-async function ollamaSetup() {
+async function ollamaSetup(botToken) {
   const pythonInstalled = await checkAndInstallPython();
   if (!pythonInstalled) return;
 
+  console.log("Installing Python requirements...");
+  execSync(`pip install -r ${pyRequirementsPath}`, { stdio: "inherit" });
+
   // ** This is an example of writing an input to the ollama config file if neccessary. **
   // const test = await showInput("Field: ");
-  // fs.writeFileSync(ollamaConfigPath, JSON.stringify({ test }), "utf8");
+  // fs.writeFileSync(, JSON.stringify({ test }), "utf8");
+
+  fs.writeFileSync(ollamaConfigPath, JSON.stringify({ botToken }), "utf8");
 
   deleteStart();
 }
@@ -137,7 +144,7 @@ async function init() {
   if (selected === "llama") {
     await llamaSetup();
   } else if (selected === "ollama") {
-    await ollamaSetup();
+    await ollamaSetup(botToken);
   }
 }
 
