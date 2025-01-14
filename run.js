@@ -1,4 +1,4 @@
-const { exec, execSync } = require("child_process");
+const { execSync } = require("child_process");
 
 const inquirer = require("inquirer");
 
@@ -31,9 +31,9 @@ async function init() {
       if (modelChoice.selected === "Exit.") {
         return;
       } else if (modelChoice.selected === "Llama") {
-        exec("node src/llamaBuild.js", { stdio: "inherit" });
+        execSync("node src/llamaBuild.js", { stdio: "inherit" });
       } else if (modelChoice.selected === "Ollama") {
-        exec("python src/ollamaBuild.py", { stdio: "inherit" });
+        execSync("python src/ollamaBuild.py", { stdio: "inherit" });
       }
     }
   } catch (error) {
