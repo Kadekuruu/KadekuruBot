@@ -11,7 +11,7 @@ filePath = currentFolder
 with open(currentFolder / "mizukiPrompt.json", "r") as f:
     modelfile = f.read()
 
-with open(currentFolder / "ollamaConfig.json", "r") as f:
+with open(currentFolder / "config.json", "r") as f:
     config = f.read()
 
 ollama.create(model = 'hf.co/MaziyarPanahi/Llama-3.2-3B-Instruct-GGUF:Q8_0', modelfile = modelfile)

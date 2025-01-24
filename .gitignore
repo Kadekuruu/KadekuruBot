@@ -1,9 +1,6 @@
-llamaConfig.json
 mizukiPrompt.json
 ollamaConfig.json
-node_modules
+config.json
+__pycache__
 prompt.json
-temp
-generalConfig.json
-prettierrc.json
-package-lock.json
+node_modules
