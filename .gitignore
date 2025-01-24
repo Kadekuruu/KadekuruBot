@@ -4,3 +4,4 @@ config.json
 __pycache__
 prompt.json
 node_modules
+.venv
