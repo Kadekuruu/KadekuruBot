@@ -2,6 +2,7 @@ from pathlib import Path
 import discord
 from discord.ext import commands
 import subprocess
+import asyncio
 import time
 import json
 from ollama import chat
@@ -12,10 +13,11 @@ with open(currentFolder / "config.json", "r") as f:
     config = json.load(f)
 
 model = config["model"]
+userPath = config["userPath"]
 
-serve_command = "C:\\Users\\skekung\\miniforge3\\condabin\\conda.bat activate llm-cpp && ollama serve"
+serve_command = f"{userPath}miniforge3\\condabin\\conda.bat activate llm-cpp && ollama serve"
 
-run_command = f"C:\\Users\\skekung\\miniforge3\\condabin\\conda.bat activate llm-cpp && ollama run {model}"
+run_command = f"{userPath}miniforge3\\condabin\\conda.bat activate llm-cpp && ollama run {model}"
 
 serve_process = subprocess.Popen(["start", "cmd", "/k", serve_command], shell=True)
 
@@ -36,7 +38,7 @@ chatMemory = []
 @bot.event
 async def on_ready():
     await bot.tree.sync()
-    print("Online!")
+    print(f"Logged in as {bot.user}")
 
 @bot.event
 async def on_message(message):
@@ -49,6 +51,8 @@ async def on_message(message):
             outgoingMessage = response['message']['content']
 
             chatMemory.append({"role": "assistant", "content": outgoingMessage})
+
+            await asyncio.sleep(2)
             await message.reply(outgoingMessage)
         except Exception as e:
             await message.channel.send(f"Error:\n{e}")
@@ -58,21 +62,8 @@ async def on_message(message):
 @bot.tree.command(name="system", description="Add system prompt")
 async def System(ctx: discord.Interaction, prompt: str):
     try:
-        await ctx.response.send_message("System prompted (* ^ ω ^)")
+        await ctx.response.send_message("System prompted")
         chatMemory.append({"role": "system", "content": prompt})
-    except Exception as e:
-        await ctx.followup.send_message(f"Error:\n{e}")
-
-@bot.tree.command(name="retrievemessage", description="Retrieve message with index")
-async def Retrieve(ctx: discord.Interaction, index: int):
-    try:
-        if index < 0 or index >= len(chatMemory):
-            await ctx.response.send_message("Error:\n{e}")
-            return
-        
-        await ctx.response.send_message("Retrieving message...")
-        retrievedMessage = chatMemory[index]
-        await ctx.followup.send_message(retrievedMessage)
     except Exception as e:
         await ctx.followup.send_message(f"Error:\n{e}")
 
