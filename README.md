@@ -4,7 +4,7 @@ Silly little discord bot
 
 ### Intel Requires
 
-(Intel oneAPI Base Toolkit)[https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit-download.html]
+[Intel oneAPI Base Toolkit](https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit-download.html)
 
 ### Config.json:
 
